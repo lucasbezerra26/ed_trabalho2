@@ -91,7 +91,7 @@ int main(int argc, char const *argv[]){
 	int cidade_a, cidade_b;
 	float peso;
 
-	while (status){
+	while (status == 1){
 		printf("Digite as rodovias que ligam a cidade. \nEx.: 1 5 ligam as cidades 1 e 5 ida e volta\n");
 		scanf(" %d %d", &cidade_a, &cidade_b);
 		printf("Qual o valor do pedágio? ");
