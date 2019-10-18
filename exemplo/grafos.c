@@ -10,7 +10,7 @@ struct Grafo{
 	int* grau;
 };
 
-typedef Grafo grafo;
+typedef struct Grafo grafo;
 
 grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado){
 	grafo *gr = (grafo*) malloc(sizeof(struct Grafo));
@@ -29,7 +29,9 @@ grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado){
 	 			}
 	 		}
 	 	}
-	} 
+	
+	}
+	return gr; 
 }
 
 void libera_grafo(grafo* gr){
