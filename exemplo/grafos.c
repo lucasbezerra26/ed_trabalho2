@@ -72,6 +72,7 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 }
 
 int main(int argc, char const *argv[]){
+	// main
 
 	grafo *g = NULL;
 	int num_cidades;
