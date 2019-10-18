@@ -13,7 +13,7 @@ struct Grafo{
 typedef struct Grafo grafo;
 
 grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado){
-	grafo *gr = (grafo*) malloc(sizeof(struct Grafo));
+	grafo *gr = (grafo*) malloc(sizeof(grafo));
 	if ( gr != NULL){
 	 	int i;
 	 	gr->nro_vertices = nro_vertices;
@@ -69,11 +69,15 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 	return 1;
 }
 
-
-
-
-
 int main(int argc, char const *argv[]){
+
+	grafo *g = NULL;
+	int num_cidades;
+
+	printf("Digite a quantidade de cidades: ");
+	scanf(" %d", &num_cidades);
+	g = cria_grafo(num_cidades, num_cidades, 1);
+
 	
 	return 0;
 }
