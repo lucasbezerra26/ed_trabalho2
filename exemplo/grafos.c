@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h.h>
+#include <stdlib.h>
+
 struct Grafo{
 	int eh_ponderado;
 	int nro_vertices;
@@ -15,7 +16,7 @@ grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado){
 	grafo *gr = (grafo*) malloc(sizeof(struct Grafo));
 	if ( gr != NULL){
 	 	int i;
-	 	gr->nro_vertices = nro_vertices
+	 	gr->nro_vertices = nro_vertices;
 	 	gr->grau_max = grau_max;
 	 	gr->eh_ponderado = (eh_ponderado !=0 )?1:0;//só para garanatir que vai ser 0 ou 1
 	 	gr->grau = (int*) calloc(nro_vertices,sizeof(int*)); //criando a lista
@@ -31,7 +32,7 @@ grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado){
 	} 
 }
 
-void libera_grafo(garfo* gr){
+void libera_grafo(grafo* gr){
 	if ( gr != NULL){
 		for (int i = 0; i < gr->nro_vertices; i++){
 			free(gr->aresta[i]);
@@ -70,8 +71,7 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 
 
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]){
 	
 	return 0;
 }
