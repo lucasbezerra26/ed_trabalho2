@@ -15,7 +15,7 @@ typedef struct Grafo grafo;
 
 grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_total){
 	grafo *gr = (grafo*) malloc(sizeof(grafo));
-	if ( gr != NULL){
+	if ( gr == NULL){
 	 	int i;
 	 	gr->nro_vertices = nro_vertices;
 	 	gr->grau_max = grau_max;
