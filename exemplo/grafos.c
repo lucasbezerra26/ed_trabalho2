@@ -21,11 +21,11 @@ grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado){
 	 	gr->eh_ponderado = (eh_ponderado !=0 )?1:0;//só para garanatir que vai ser 0 ou 1
 	 	gr->grau = (int*) calloc(nro_vertices,sizeof(int*)); //criando a lista
 	 	for (int i = 0; i < nro_vertices; i++){
-	 		gr->aresta[i] = (int*) malloc(grau_max*sizeof(int*)); //colocando para apontar cada posição da lista para outra lista  
+	 		gr->aresta[i] = (int*) malloc(grau_max * sizeof(int*)); //colocando para apontar cada posição da lista para outra lista  
 	 		if (gr->eh_ponderado){
-	 			gr->pesos = (float**) malloc(nro_vertices*sizeof(float*));
+	 			gr->pesos = (float**) malloc(nro_vertices * sizeof(float*));
 	 			for (i = 0; i < nro_vertices; i++){
-	 				gr->pesos[i] = (float*) malloc(grau_max*sizeof(float)); //fazendo a mesma coisa com os pesos
+	 				gr->pesos[i] = (float*) malloc(grau_max  *sizeof(float)); //fazendo a mesma coisa com os pesos
 	 			}
 	 		}
 	 	}
