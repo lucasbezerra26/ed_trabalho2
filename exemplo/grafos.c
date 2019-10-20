@@ -65,10 +65,34 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 	gr->aresta[orig][gr->grau[orig]] = dest; //adicionando o destino a ultima posicao da lista
 	if(gr->eh_ponderado)
 		gr->pesos[orig][gr->grau[orig]] = peso; //se for ponderado faz a mesma coisa ao peso
-	gr->grau[orig]++; // e incrementa o numero de ligações para aquele 	
+	gr->grau[orig]++; // e incrementa o numero de ligações para aquele vertice 	
 
 	if(eh_digrafo == 0)
 		insereAresta(gr,dest,orig,1,peso); //se não for digrafo ele vai ligando o dest a orig, o 1 indicando que é digrafo é para ele repetir somente uma vez
+	return 1;
+}
+
+int removerAresta(grafo* gr, int orig, int dest, int eh_digrafo){
+	//inicio (verificando se tudo existe)
+	if (gr == NULL)
+		return 0;
+	if(orig < 0 || orig >= gr->nro_vertices)
+		return 0;
+	if(dest < 0 || dest >= gr->nro_vertices)
+		return 0;
+	//fim;
+
+	int i=0;
+	while(i<grau[orig] && gr->aresta[orig][i]!=dest)
+		i++;
+	if(i == gr->grau[orig]) //se n encontrou
+		return 0;
+	gr->grau[orig]--; //voltando um pq o grau fica com o numero de aresta mais 1.
+	gr->aresta[orig][i] = gr->arestas[orig][gr->grau[orig]]; //jogando a ultima aresta na posição que quer excluir
+	if(gr->eh_ponderado)
+		gr->peso[orig][i]=gr->pesos[orig][gr->grau[orig]]; //fazendo a mesma coisa com peso
+	if(eh_digrafo == 0)
+		removerAresta(gr,dest,orig,1);
 	return 1;
 }
 
