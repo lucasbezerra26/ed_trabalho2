@@ -83,14 +83,14 @@ int removerAresta(grafo* gr, int orig, int dest, int eh_digrafo){
 	//fim;
 
 	int i=0;
-	while(i<grau[orig] && gr->aresta[orig][i]!=dest)
+	while(i<gr->grau[orig] && gr->aresta[orig][i]!=dest)
 		i++;
 	if(i == gr->grau[orig]) //se n encontrou
 		return 0;
 	gr->grau[orig]--; //voltando um pq o grau fica com o numero de aresta mais 1.
-	gr->aresta[orig][i] = gr->arestas[orig][gr->grau[orig]]; //jogando a ultima aresta na posição que quer excluir
+	gr->aresta[orig][i] = gr->aresta[orig][gr->grau[orig]]; //jogando a ultima aresta na posição que quer excluir
 	if(gr->eh_ponderado)
-		gr->peso[orig][i]=gr->pesos[orig][gr->grau[orig]]; //fazendo a mesma coisa com peso
+		gr->pesos[orig][i]=gr->pesos[orig][gr->grau[orig]]; //fazendo a mesma coisa com peso
 	if(eh_digrafo == 0)
 		removerAresta(gr,dest,orig,1);
 	return 1;
