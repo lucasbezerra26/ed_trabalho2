@@ -96,7 +96,7 @@ int removerAresta(grafo* gr, int orig, int dest, int eh_digrafo){
 	return 1;
 }
 
-int main(int argc, char const *argv[]){
+int main(){
 	// main
 
 	grafo *g = NULL;
