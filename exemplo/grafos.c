@@ -4,10 +4,10 @@
 struct Grafo{
 	int eh_ponderado;
 	int nro_vertices;
-	int grau_max;
-	int** aresta;
+	int grau_max; //numero maximo de liagações
+	int** aresta; //as conexões 
 	float** pesos;
-	int* grau;
+	int* grau; //quantas aresta o vertice ja possue
 	float valor_total;
 };
 
@@ -54,20 +54,21 @@ void libera_grafo(grafo* gr){
 }
 
 int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
+	//inicio (verificando se tudo existe)
 	if (gr == NULL)
 		return 0;
 	if(orig < 0 || orig >= gr->nro_vertices)
 		return 0;
 	if(dest < 0 || dest >= gr->nro_vertices)
 		return 0;
-
-	gr->aresta[orig][gr->grau[orig]] = dest;
+	//fim;
+	gr->aresta[orig][gr->grau[orig]] = dest; //adicionando o destino a ultima posicao da lista
 	if(gr->eh_ponderado)
-		gr->pesos[orig][gr->grau[orig]] = peso;
-	gr->grau[orig]++;
+		gr->pesos[orig][gr->grau[orig]] = peso; //se for ponderado faz a mesma coisa ao peso
+	gr->grau[orig]++; // e incrementa o numero de ligações para aquele 	
 
 	if(eh_digrafo == 0)
-		insereAresta(gr,dest,orig,1,peso);
+		insereAresta(gr,dest,orig,1,peso); //se não for digrafo ele vai ligando o dest a orig, o 1 indicando que é digrafo é para ele repetir somente uma vez
 	return 1;
 }
 
