@@ -72,6 +72,25 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 	return 1;
 }
 
+//inicio(busca em profudidade de: https://www.youtube.com/watch?v=pJ3ilnhXWCQ)
+void buscaProfundidade(grafo *gr, int ini, int *visitado, int cont){
+	int i;
+	visitado[ini] = cont;
+	for(i=0; i<gr->grau[ini];i++){
+		if (!visitado[gr->aresta[ini][i]])
+		buscaProfundidade(gr,gr->aresta[ini][i],visitado, cont+1);
+	}
+}
+
+void buscaProfundidade_grafo(grafo *gr, int ini, int *visitado){
+	int i,cont =1;
+	for(i=0; i<gr->nro_vertices; i++)
+		visitado[i] = 0;
+	buscaProfundidade(gr,ini,visitado,cont);
+} 
+
+//fim
+
 int main(){
 	// main
 
