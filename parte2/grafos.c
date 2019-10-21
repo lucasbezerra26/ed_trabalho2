@@ -1,17 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
+int t;
 
 struct Grafo{
 	int eh_ponderado;
 	int nro_vertices;
-	int grau_max; //numero maximo de liagações
+	int grau_max; //numero maximo de ligações
 	int** aresta; //as conexões 
 	float** pesos;
 	int* grau; //quantas aresta o vertice ja possue
 	float valor_total;
 };
-
 typedef struct Grafo grafo;
+
+
+struct Pilha{
+	int valor;
+	struct Pilha *prox;
+	// int *memoria;
+    // int topo;
+};
+typedef struct Pilha pilha;
+
+pilha *inserirNaPilha(pilha *listaPilha, int valor){
+    pilha *novo = (pilha*) malloc(sizeof(pilha));
+    novo->valor = valor;
+    novo->prox = listaPilha;
+    return novo;
+}
+
+pilha *removerNaPilha(pilha *listaPilha){
+    if( listaPilha == NULL)
+        return NULL;
+    return listaPilha->prox;
+}
+
+int buscarNaPilha(pilha *listaPilha, int valor){
+    if( listaPilha == NULL){
+        return 0;
+    }
+    if( listaPilha->valor == valor)
+        return 1;
+    return buscarNaPilha(listaPilha->prox, valor);
+}
+
+int topoDaPilha(pilha *listaPilha){
+    return listaPilha->valor;
+}
+
 
 grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_total){
 	grafo *gr = (grafo*) malloc(sizeof(grafo));
@@ -72,24 +108,45 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 	return 1;
 }
 
-//inicio(busca em profudidade de: https://www.youtube.com/watch?v=pJ3ilnhXWCQ)
-void buscaProfundidade(grafo *gr, int ini, int *visitado, int cont){
-	int i;
-	visitado[ini] = cont;
-	for(i=0; i<gr->grau[ini];i++){
-		if (!visitado[gr->aresta[ini][i]])
-		buscaProfundidade(gr,gr->aresta[ini][i],visitado, cont+1);
-	}
+typedef struct{
+	int *destino;
+	int cidades;
+	float peso;
+}Caminho;
+
+void iniciaCaminho(Caminho *caminhoIniciar){
+	caminhoIniciar->cidades = 0; 
+	caminhoIniciar->destino = (int*) malloc(sizeof(int));
+	caminhoIniciar->peso = 0;
 }
 
-void buscaProfundidade_grafo(grafo *gr, int ini, int *visitado){
-	int i,cont =1;
-	for(i=0; i<gr->nro_vertices; i++)
-		visitado[i] = 0;
-	buscaProfundidade(gr,ini,visitado,cont);
-} 
+void mostrarCaminho(Caminho *caminho){
+	printf("Numero de cidades: %d", caminho->cidades);
+	printf("Dinheiro gasto: %f", caminho->peso);
+	printf("Cidades: ");
+	for(int i = 0; i<caminho->cidades;i++)
+		printf(" ,%d", caminho->destino[i]);
+}
 
-//fim
+Caminho *caminhoSuper;
+
+void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho)
+{
+	inserirNaPilha(p, ini);
+	for (int i = 0; i < gr->grau[ini]; i++)
+	{
+		if (!buscarNaPilha(p, gr->aresta[ini][i]) && (gr->valor_total <= caminho->peso + gr->pesos[ant][ini])){
+			caminho->cidades += 1; 
+			caminho->destino = (int*) realloc(caminho->destino, caminho->cidades*sizeof(int));
+			caminho->destino[caminho->cidades] = ini;
+			caminho->peso += gr->pesos[ant][ini];
+			if( caminho->cidades > caminhoSuper->cidades )
+				caminhoSuper = caminho;
+			busca(gr,p, gr->aresta[ini][i], ini, caminho);
+		}
+	}
+	removerNaPilha(p);
+}
 
 int main(){
 	// main
@@ -122,5 +179,10 @@ int main(){
 		scanf(" %d", &status);	
 	};
 
+	pilha *p;
+	Caminho *caminho;
+	iniciaCaminho(caminho);
+	busca(g,p,1,1,caminho);
+	mostrarCaminho(caminhoSuper);
 	return 0;
 }
