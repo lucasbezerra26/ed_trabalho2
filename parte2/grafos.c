@@ -13,6 +13,12 @@ struct Grafo{
 };
 typedef struct Grafo grafo;
 
+struct Caminho{
+	int *destino;
+	int cidades;
+	float peso;
+};
+typedef struct Caminho Caminho;
 
 struct Pilha{
 	int valor;
@@ -108,16 +114,13 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 	return 1;
 }
 
-typedef struct{
-	int *destino;
-	int cidades;
-	float peso;
-}Caminho;
-
-void iniciaCaminho(Caminho *caminhoIniciar){
-	caminhoIniciar->cidades = 0; 
-	caminhoIniciar->destino = (int*) malloc(sizeof(int));
-	caminhoIniciar->peso = 0;
+Caminho *iniciaCaminho(){
+	Caminho *aux;
+	aux = (Caminho *) malloc(sizeof(Caminho));
+	aux->destino = (int *) malloc(sizeof(int));
+	aux->cidades = 0;
+	aux->peso = (float) 0.0;
+	return aux;
 }
 
 void mostrarCaminho(Caminho *caminho){
@@ -180,8 +183,10 @@ int main(){
 	};
 
 	pilha *p;
-	Caminho *caminho;
-	iniciaCaminho(caminho);
+	Caminho *caminho = NULL;
+
+	caminho = iniciaCaminho();
+	
 	busca(g,p,1,1,caminho);
 	mostrarCaminho(caminhoSuper);
 	return 0;
