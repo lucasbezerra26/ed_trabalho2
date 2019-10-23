@@ -28,53 +28,26 @@ struct Pilha{
 };
 typedef struct Pilha pilha;
 
-pilha *inserirNaPilha(pilha *listaPilha, int valor){
-    pilha *novo = (pilha*) malloc(sizeof(pilha));
-    novo->valor = valor;
-    novo->prox = listaPilha;
-    return novo;
-}
-
-pilha *removerNaPilha(pilha *listaPilha){
-    if( listaPilha == NULL)
-        return NULL;
-    return listaPilha->prox;
-}
-
-int buscarNaPilha(pilha *listaPilha, int valor){
-    if( listaPilha == NULL){
-        return 0;
-    }
-    if( listaPilha->valor == valor)
-        return 1;
-    return buscarNaPilha(listaPilha->prox, valor);
-}
-
-int topoDaPilha(pilha *listaPilha){
-    return listaPilha->valor;
-}
-
-
 grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_total){
 	grafo *gr = (grafo*) malloc(sizeof(grafo));
-	if ( gr == NULL){
-	 	int i;
-	 	gr->nro_vertices = nro_vertices;
-	 	gr->grau_max = grau_max;
-		gr->valor_total = valor_total;
-	 	gr->eh_ponderado = (eh_ponderado !=0 )?1:0;//só para garanatir que vai ser 0 ou 1
-	 	gr->grau = (int*) calloc(nro_vertices,sizeof(int*)); //criando a lista
-	 	for (int i = 0; i < nro_vertices; i++){
-	 		gr->aresta[i] = (int*) malloc(grau_max * sizeof(int*)); //colocando para apontar cada posição da lista para outra lista  
-	 		if (gr->eh_ponderado){
-	 			gr->pesos = (float**) malloc(nro_vertices * sizeof(float*));
-	 			for (i = 0; i < nro_vertices; i++){
-	 				gr->pesos[i] = (float*) malloc(grau_max  *sizeof(float)); //fazendo a mesma coisa com os pesos
-	 			}
-	 		}
-	 	}
-	
+	int i;
+	gr->nro_vertices = nro_vertices;
+	gr->grau_max = grau_max;
+	gr->valor_total = valor_total;
+	gr->eh_ponderado = (eh_ponderado !=0 )?1:0;//só para garanatir que vai ser 0 ou 1
+	gr->grau = (int*) calloc(nro_vertices,sizeof(int*)); //criando a lista
+	gr->aresta = (int*) malloc(sizeof(int));
+	for (int i = 0; i < nro_vertices; i++){
+		gr->aresta[i] = (int*) malloc(grau_max * sizeof(int*)); //colocando para apontar cada posição da lista para outra lista  
 	}
+	if (gr->eh_ponderado){
+		gr->pesos = (float**) malloc(nro_vertices * sizeof(float*));
+		for (i = 0; i < nro_vertices; i++){
+			printf("peso\n");
+			gr->pesos[i] = (float*) malloc(grau_max  *sizeof(float)); //fazendo a mesma coisa com os pesos
+		}
+	}
+	printf("terminei\n");
 	return gr; 
 }
 
@@ -123,6 +96,39 @@ Caminho *iniciaCaminho(){
 	return aux;
 }
 
+pilha *iniciaPilha(){
+	pilha *aux;
+	aux = (pilha *) malloc(sizeof(pilha));
+	aux->prox = NULL;
+	return aux;
+}
+
+pilha *inserirNaPilha(pilha *listaPilha, int valor){
+	pilha *novo = (pilha*) malloc(sizeof(pilha));
+	novo->valor = valor;
+	novo->prox = listaPilha;
+	return novo;
+}
+
+pilha *removerNaPilha(pilha *listaPilha){
+	if( listaPilha == NULL)
+		return NULL;
+	return listaPilha->prox;
+}
+
+int buscarNaPilha(pilha *listaPilha, int valor){
+	if( listaPilha == NULL){
+		return 0;
+	}
+	if( listaPilha->valor == valor)
+		return 1;
+	return buscarNaPilha(listaPilha->prox, valor);
+}
+
+int topoDaPilha(pilha *listaPilha){
+	return listaPilha->valor;
+}
+
 void mostrarCaminho(Caminho *caminho){
 	printf("Numero de cidades: %d", caminho->cidades);
 	printf("Dinheiro gasto: %f", caminho->peso);
@@ -133,11 +139,11 @@ void mostrarCaminho(Caminho *caminho){
 
 Caminho *caminhoSuper;
 
-void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho)
-{
+void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
 	inserirNaPilha(p, ini);
-	for (int i = 0; i < gr->grau[ini]; i++)
-	{
+	printf("tenho grau %d\n", gr->grau_max);
+	printf("tenho grau %d\n", gr->grau[0]);
+	for (int i = 0; i < gr->grau[ini]; i++){
 		if (!buscarNaPilha(p, gr->aresta[ini][i]) && (gr->valor_total <= caminho->peso + gr->pesos[ant][ini])){
 			caminho->cidades += 1; 
 			caminho->destino = (int*) realloc(caminho->destino, caminho->cidades*sizeof(int));
@@ -182,9 +188,12 @@ int main(){
 		scanf(" %d", &status);	
 	};
 
-	pilha *p;
+	printf("grafo=====\n");
+
+	pilha *p = NULL;
 	Caminho *caminho = NULL;
 
+	p = iniciaPilha();
 	caminho = iniciaCaminho();
 	
 	busca(g,p,1,1,caminho);
