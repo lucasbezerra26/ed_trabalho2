@@ -152,25 +152,37 @@ void mostrarCaminho(Caminho *caminho){
 void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
 	inserirNaPilha(p, ini-1);
 	printf("tenho grau %d\n", gr->grau_max);
-	printf("tenho grau %d\n", gr->grau[1]);
+	printf("tenho grau %d\n", gr->grau[0]);
 	for (int i = 0; i < gr->grau[ini-1]; i++){
-		printf("eii\n");
-		// printf("%d",buscarNaPilha(p, gr->aresta[ini-1][i]) );
-		printf("valor total %f\n", gr->valor_total);
-		printf("valor soma %f\n", caminho->peso + gr->pesos[ant - 1][ini - 1]);
+		
 		if (!buscarNaPilha(p, gr->aresta[ini-1][i]) && (gr->valor_total >= caminho->peso + gr->pesos[ant-1][ini-1])){
-			caminho->cidades += 1; 
-			caminho->destino = (int*) realloc(caminho->destino, caminho->cidades*sizeof(int));
-			caminho->destino[caminho->cidades] = ini;
-			caminho->peso += gr->pesos[ant-1][ini-1];
-			if( caminho->cidades > caminhoSuper->cidades )
+			caminho->cidades += 1;
+			caminho->destino = (int *) realloc(caminho->destino, caminho->cidades*sizeof(int));
+			caminho->destino[caminho->cidades-1] = ini-1;
+			caminho->peso += gr->pesos[ini-1][i];
+			if(caminho->cidades > caminhoSuper->cidades){
 				caminhoSuper = caminho;
-			printf("eii-%d",caminhoSuper->cidades);
-			busca(gr,p, gr->aresta[ini-1][i], ini, caminho);
+			}
+			busca(gr, p, gr->aresta[ini-1][i], ini, caminho);
 		}
-		caminho->cidades -= 1;
-		free(&caminho->destino[caminho->cidades]);
-		caminho->peso -= gr->pesos[ant - 1][ini - 1];
+		
+		// printf("eii\n");
+		// // printf("%d",buscarNaPilha(p, gr->aresta[ini-1][i]) );
+		// printf("valor total %f\n", gr->valor_total);
+		// printf("valor soma %f\n", caminho->peso + gr->pesos[ant - 1][ini - 1]);
+		// if (!buscarNaPilha(p, gr->aresta[ini-1][i]) && (gr->valor_total >= caminho->peso + gr->pesos[ant-1][ini-1])){
+		// 	caminho->cidades += 1; 
+		// 	caminho->destino = (int*) realloc(caminho->destino, caminho->cidades*sizeof(int));
+		// 	caminho->destino[caminho->cidades] = ini;
+		// 	caminho->peso += gr->pesos[ant-1][ini-1];
+		// 	if( caminho->cidades > caminhoSuper->cidades )
+		// 		caminhoSuper = caminho;
+		// 	printf("eii-%d",caminhoSuper->cidades);
+		// 	busca(gr,p, gr->aresta[ini-1][i], ini, caminho);
+		// }
+		// caminho->cidades -= 1;
+		// free(&caminho->destino[caminho->cidades]);
+		// caminho->peso -= gr->pesos[ant - 1][ini - 1];
 	}
 	removerNaPilha(p);
 }
