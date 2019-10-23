@@ -44,7 +44,7 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 	if(dest < 0 || dest >= gr->nro_vertices)
 		return 0;
 	//fim;
-	gr->aresta[orig-1][gr->grau[orig-1]] = dest; //adicionando o destino a ultima posicao da lista
+	gr->aresta[orig-1][gr->grau[orig-1]] = dest-1; //adicionando o destino a ultima posicao da lista
 	if(gr->eh_ponderado)
 		gr->pesos[orig-1][gr->grau[orig-1]] = peso; //se for ponderado faz a mesma coisa ao peso
 	gr->grau[orig-1]++; // e incrementa o numero de ligações para aquele vertice 	
