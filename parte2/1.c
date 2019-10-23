@@ -35,10 +35,10 @@ grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_
 	gr->grau_max = grau_max;
 	gr->valor_total = valor_total;
 	gr->eh_ponderado = (eh_ponderado !=0 )?1:0;//só para garanatir que vai ser 0 ou 1
-	gr->grau = (int*) calloc(nro_vertices,sizeof(int*)); //criando a lista
-	gr->aresta = (int*) malloc(sizeof(int));
+	gr->grau = (int*) calloc(nro_vertices,sizeof(int)); //criando a lista
+	gr->aresta = (int**) malloc(sizeof(int*));
 	for (int i = 0; i < nro_vertices; i++){
-		gr->aresta[i] = (int*) malloc(grau_max * sizeof(int*)); //colocando para apontar cada posição da lista para outra lista  
+		gr->aresta[i] = (int*) malloc(grau_max * sizeof(int)); //colocando para apontar cada posição da lista para outra lista  
 	}
 	if (gr->eh_ponderado){
 		gr->pesos = (float**) malloc(nro_vertices * sizeof(float*));
