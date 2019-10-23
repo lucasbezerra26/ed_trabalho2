@@ -19,6 +19,7 @@ struct Caminho{
 	float peso;
 };
 typedef struct Caminho Caminho;
+Caminho *caminhoSuper;
 
 struct Pilha{
 	int valor;
@@ -34,7 +35,7 @@ grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_
 	gr->nro_vertices = nro_vertices;
 	gr->grau_max = grau_max;
 	gr->valor_total = valor_total;
-	gr->eh_ponderado = (eh_ponderado !=0 )?1:0;//só para garanatir que vai ser 0 ou 1
+	gr->eh_ponderado = eh_ponderado;//só para garanatir que vai ser 0 ou 1
 	gr->grau = (int*) calloc(nro_vertices,sizeof(int)); //criando a lista
 	gr->aresta = (int**) malloc(sizeof(int*));
 	for (int i = 0; i < nro_vertices; i++){
@@ -72,19 +73,29 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 	//inicio (verificando se tudo existe)
 	if (gr == NULL)
 		return 0;
-	if(orig < 0 || orig >= gr->nro_vertices)
+	if(orig-1 < 0 || orig-1 >= gr->nro_vertices)
 		return 0;
-	if(dest < 0 || dest >= gr->nro_vertices)
+	if(dest-1 < 0 || dest-1 >= gr->nro_vertices)
 		return 0;
 	//fim;
-	gr->aresta[orig][gr->grau[orig]] = dest; //adicionando o destino a ultima posicao da lista
+	gr->aresta[orig-1][gr->grau[orig-1]] = dest-1; //adicionando o destino a ultima posicao da lista
 	if(gr->eh_ponderado)
-		gr->pesos[orig][gr->grau[orig]] = peso; //se for ponderado faz a mesma coisa ao peso
-	gr->grau[orig]++; // e incrementa o numero de ligações para aquele vertice 	
+		gr->pesos[orig-1][gr->grau[orig-1]] = peso; //se for ponderado faz a mesma coisa ao peso
+	gr->grau[orig-1]++; // e incrementa o numero de ligações para aquele vertice 	
 
-	if(eh_digrafo == 0)
+	printf("Entrando antes do print: %d\n", orig);
+	if(eh_digrafo == 0){
+		printf("Entrando: %d\n", orig);
 		insereAresta(gr,dest,orig,1,peso); //se não for digrafo ele vai ligando o dest a orig, o 1 indicando que é digrafo é para ele repetir somente uma vez
+	}
 	return 1;
+}
+
+void imprimirGrafo(grafo *gr){
+	for( int x=0; x<gr->nro_vertices; x++){
+		for( int i=0; i< gr->grau[x]; i++)
+			printf("%d tem ligacao com %d\n",x+1, gr->aresta[x][i]+1);
+	}
 }
 
 Caminho *iniciaCaminho(){
@@ -131,27 +142,29 @@ int topoDaPilha(pilha *listaPilha){
 
 void mostrarCaminho(Caminho *caminho){
 	printf("Numero de cidades: %d", caminho->cidades);
-	printf("Dinheiro gasto: %f", caminho->peso);
-	printf("Cidades: ");
-	for(int i = 0; i<caminho->cidades;i++)
-		printf(" ,%d", caminho->destino[i]);
+	// printf("Dinheiro gasto: %f", caminho->peso);
+	// printf("Cidades: ");
+	// for(int i = 0; i<caminho->cidades;i++)
+		// printf(" ,%d", caminho->destino[i]);
 }
 
-Caminho *caminhoSuper;
 
 void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
-	inserirNaPilha(p, ini);
+	inserirNaPilha(p, ini-1);
 	printf("tenho grau %d\n", gr->grau_max);
-	printf("tenho grau %d\n", gr->grau[0]);
-	for (int i = 0; i < gr->grau[ini]; i++){
-		if (!buscarNaPilha(p, gr->aresta[ini][i]) && (gr->valor_total <= caminho->peso + gr->pesos[ant][ini])){
+	printf("tenho grau %d\n", gr->grau[1]);
+	for (int i = 0; i < gr->grau[ini-1]; i++){
+		printf("eii\n");
+		printf("%d",buscarNaPilha(p, gr->aresta[ini-1][i]) );
+		if (!buscarNaPilha(p, gr->aresta[ini-1][i]) && (gr->valor_total <= caminho->peso + gr->pesos[ant-1][ini-1])){
 			caminho->cidades += 1; 
 			caminho->destino = (int*) realloc(caminho->destino, caminho->cidades*sizeof(int));
 			caminho->destino[caminho->cidades] = ini;
-			caminho->peso += gr->pesos[ant][ini];
+			caminho->peso += gr->pesos[ant-1][ini-1];
 			if( caminho->cidades > caminhoSuper->cidades )
 				caminhoSuper = caminho;
-			busca(gr,p, gr->aresta[ini][i], ini, caminho);
+			printf("eii-%d",caminhoSuper->cidades);
+			busca(gr,p, gr->aresta[ini-1][i], ini, caminho);
 		}
 	}
 	removerNaPilha(p);
@@ -196,7 +209,8 @@ int main(){
 	p = iniciaPilha();
 	caminho = iniciaCaminho();
 	
+	imprimirGrafo(g);
 	busca(g,p,1,1,caminho);
-	mostrarCaminho(caminhoSuper);
+	// mostrarCaminho(caminhoSuper);
 	return 0;
 }
