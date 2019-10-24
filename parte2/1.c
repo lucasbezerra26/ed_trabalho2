@@ -218,7 +218,7 @@ int main(){
 	// scanf(" %f", &caixa);
 
 	// g = cria_grafo(num_cidades, num_cidades, 1, caixa);
-	g = cria_grafo(4, 4, 1, 15);
+	g = cria_grafo(5, 5, 1, 15);
 
 	// printf("Suas cidades são numeradas entre 1 e %d\n", num_cidades);
 
@@ -229,7 +229,7 @@ int main(){
 	insereAresta(g, 2, 3, 0, 2);
 	insereAresta(g, 2, 4, 0, 1);
  
-	// insereAresta(g, 1, 5, 0, 1);
+	insereAresta(g, 1, 5, 0, 1);
 	// insereAresta(g, 1, 2, 0, 1);
 
 	// while (status == 1){
