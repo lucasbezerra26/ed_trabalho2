@@ -83,9 +83,9 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 		gr->pesos[orig-1][gr->grau[orig-1]] = peso; //se for ponderado faz a mesma coisa ao peso
 	gr->grau[orig-1]++; // e incrementa o numero de ligações para aquele vertice 	
 
-	// printf("Entrando antes do print: %d\n", orig);
+	printf("Entrando antes do print: %d\n", orig);
 	if(eh_digrafo == 0){
-		// printf("Entrando: %d\n", orig);
+		printf("Entrando: %d\n", orig);
 		insereAresta(gr,dest,orig,1,peso); //se não for digrafo ele vai ligando o dest a orig, o 1 indicando que é digrafo é para ele repetir somente uma vez
 	}
 	return 1;
@@ -98,14 +98,6 @@ void imprimirGrafo(grafo *gr){
 	}
 }
 
-Caminho *iniciaCaminho(){
-	Caminho *aux;
-	aux = (Caminho *) malloc(sizeof(Caminho));
-	aux->destino = (int *) malloc(sizeof(int));
-	aux->cidades = 0;
-	aux->peso = (float) 0.0;
-	return aux;
-}
 
 pilha *iniciaPilha(){
 	pilha *aux;
@@ -140,34 +132,59 @@ int topoDaPilha(pilha *listaPilha){
 	return listaPilha->valor;
 }
 
+Caminho *iniciaCaminho(){
+	Caminho *aux;
+	aux = (Caminho *) malloc(sizeof(Caminho));
+	aux->destino = (int *) malloc(sizeof(int));
+	aux->cidades = 0;
+	aux->peso = (float) 0.0;
+	return aux;
+}
+
 void mostrarCaminho(Caminho *caminho){
 	printf("Numero de cidades: %d\n", caminho->cidades);
 	printf("Dinheiro gasto: %f\n", caminho->peso);
-	printf("Cidades: ");
+	printf("Cidades: 1");
 	for(int i = 0; i<caminho->cidades;i++)
-		printf(" ,%d", caminho->destino[i]);
+		printf(", %d ", caminho->destino[i]+1);
 }
 
 
 void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
-	inserirNaPilha(p, ini-1);
-	printf("tenho grau %d\n", gr->grau_max);
-	printf("tenho grau %d\n", gr->grau[0]);
+	p = inserirNaPilha(p, ini-1);
+	printf("foi adcionado a pilha %d \n", ini-1);
+	// printf("tenho grau %d\n", gr->grau_max);
+	// printf("tenho grau %d\n", gr->grau[0]);
+	// printf("ini %d\n", ini);
 	for (int i = 0; i < gr->grau[ini-1]; i++){
-		
-		if (!buscarNaPilha(p, gr->aresta[ini-1][i]) && (gr->valor_total >= caminho->peso + gr->pesos[ant-1][ini-1])){
+		// printf("aresta %d, i=%d\n",gr->aresta[1][0],i);
+		printf("bucado: %d; res: %d\n",gr->aresta[ini-1][i],buscarNaPilha(p, gr->aresta[ini-1][i]) );
+		if (!buscarNaPilha(p, gr->aresta[ini-1][i]) && (gr->valor_total >= caminho->peso + gr->pesos[ini - 1][i])){
 			caminho->cidades += 1;
 			caminho->destino = (int *) realloc(caminho->destino, caminho->cidades*sizeof(int));
-			caminho->destino[caminho->cidades-1] = ini-1;
+			caminho->destino[caminho->cidades-1] = gr->aresta[ini-1][i];
 			caminho->peso += gr->pesos[ini-1][i];
-			if(caminho->cidades > caminhoSuper->cidades){
-				caminhoSuper = caminho;
+			printf("----aqui %d , %d \n", caminho->cidades, caminhoSuper->cidades);
+			if (caminho->cidades > caminhoSuper->cidades || ( (caminho->cidades == caminhoSuper->cidades) && (caminhoSuper->peso > caminho->peso) )){
+				// if (caminho->cidades == caminhoSuper->cidades && caminhoSuper->peso > caminho->peso)
+				caminhoSuper->cidades = caminho->cidades;
+				caminhoSuper->peso =caminho->peso ;
+				caminhoSuper->destino = (int *)malloc(caminho->cidades * sizeof(int));
+				for( int i =0; i< caminhoSuper->cidades; i++){
+					caminhoSuper->destino[i] = caminho->destino[i];
+					printf("eita %d, peso %f\n", caminho->destino[i], caminhoSuper->peso);
+				}
+				// printf("adc\n");
 			}
-			busca(gr, p, gr->aresta[ini-1][i], ini, caminho);
+			// printf("a %d\n",gr->aresta[ini - 1][i]);
+			// printf("eii,\n");
+			busca(gr, p, gr->aresta[ini-1][i]+1, ini, caminho);
+			caminho->cidades -= 1;
+			caminho->destino = (int *)realloc(caminho->destino, caminho->cidades * sizeof(int));
+			caminho->peso -= gr->pesos[ini-1][i];
 		}
 		
 		// printf("eii\n");
-		// // printf("%d",buscarNaPilha(p, gr->aresta[ini-1][i]) );
 		// printf("valor total %f\n", gr->valor_total);
 		// printf("valor soma %f\n", caminho->peso + gr->pesos[ant - 1][ini - 1]);
 		// if (!buscarNaPilha(p, gr->aresta[ini-1][i]) && (gr->valor_total >= caminho->peso + gr->pesos[ant-1][ini-1])){
@@ -209,8 +226,10 @@ int main(){
 	int cidade_a, cidade_b;
 	float peso;
 	insereAresta(g, 1, 2, 0, 1);
-	insereAresta(g, 2, 3, 0, 1);
+	insereAresta(g, 2, 3, 0, 2);
 	insereAresta(g, 2, 4, 0, 1);
+
+	// insereAresta(g, 1, 5, 0, 1);
 	// insereAresta(g, 1, 2, 0, 1);
 
 	// while (status == 1){
@@ -231,9 +250,13 @@ int main(){
 	p = iniciaPilha();
 	caminho = iniciaCaminho();
 	caminhoSuper = iniciaCaminho();
+
+	// p = inserirNaPilha(p,1);
+	// printf("Merda desgracada %d",buscarNaPilha(p,1));
 	
-	// imprimirGrafo(g);
+	imprimirGrafo(g);
 	busca(g,p,1,1,caminho);
 	mostrarCaminho(caminhoSuper);
+	printf("\n");
 	return 0;
 }
