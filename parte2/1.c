@@ -37,15 +37,16 @@ grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_
 	gr->valor_total = valor_total;
 	gr->eh_ponderado = eh_ponderado;//só para garanatir que vai ser 0 ou 1
 	gr->grau = (int*) calloc(nro_vertices,sizeof(int)); //criando a lista
-	gr->aresta = (int**) malloc(sizeof(int*));
+	gr->aresta = (int**) malloc(sizeof(int*)*nro_vertices);
 	for (int i = 0; i < nro_vertices; i++){
 		gr->aresta[i] = (int*) malloc(grau_max * sizeof(int)); //colocando para apontar cada posição da lista para outra lista  
-	}
-	if (gr->eh_ponderado){
-		gr->pesos = (float**) malloc(nro_vertices * sizeof(float*));
-		for (i = 0; i < nro_vertices; i++){
-			printf("peso\n");
-			gr->pesos[i] = (float*) malloc(grau_max  *sizeof(float)); //fazendo a mesma coisa com os pesos
+		
+		if (gr->eh_ponderado){
+			gr->pesos = (float**) malloc(nro_vertices * sizeof(float*));
+			for (int j = 0; j < nro_vertices; j++){
+				printf("peso\n");
+				gr->pesos[j] = (float*) malloc(grau_max  *sizeof(float)); //fazendo a mesma coisa com os pesos
+			}
 		}
 	}
 	printf("terminei\n");
@@ -71,6 +72,7 @@ void libera_grafo(grafo* gr){
 
 int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 	//inicio (verificando se tudo existe)
+	
 	if (gr == NULL)
 		return 0;
 	if(orig-1 < 0 || orig-1 >= gr->nro_vertices)
@@ -211,36 +213,36 @@ int main(){
 	int num_cidades;
 	float caixa;
 
-	// printf("Digite a quantidade de cidades: ");
-	// scanf(" %d", &num_cidades);
+	printf("Digite a quantidade de cidades: ");
+	scanf(" %d", &num_cidades);
 	
-	// printf("Qual o valor máximo para gasto: ");
-	// scanf(" %f", &caixa);
+	printf("Qual o valor máximo para gasto: ");
+	scanf(" %f", &caixa);
 
-	// g = cria_grafo(num_cidades, num_cidades, 1, caixa);
+	g = cria_grafo(num_cidades, num_cidades, 1, caixa);
 	g = cria_grafo(5, 5, 1, 15);
 
-	// printf("Suas cidades são numeradas entre 1 e %d\n", num_cidades);
+	printf("Suas cidades são numeradas entre 1 e %d\n", num_cidades);
 
 	int status = 1;
 	int cidade_a, cidade_b;
 	float peso;
-	insereAresta(g, 1, 2, 0, 1);
-	insereAresta(g, 2, 3, 0, 2);
-	insereAresta(g, 2, 4, 0, 1);
+	// insereAresta(g, 1, 2, 0, 1);
+	// insereAresta(g, 2, 3, 0, 2);
+	// insereAresta(g, 2, 4, 0, 1);
  
-	insereAresta(g, 1, 5, 0, 1);
+	// insereAresta(g, 1, 5, 0, 1);
 	// insereAresta(g, 1, 2, 0, 1);
 
-	// while (status == 1){
-	// 	printf("Digite as rodovias que ligam a cidade. \nEx.: 1 5 ligam as cidades 1 e 5 ida e volta\n");
-	// 	scanf(" %d %d", &cidade_a, &cidade_b);
-	// 	printf("Qual o valor do pedágio? ");
-	// 	scanf(" %f", &peso);
-	// 	insereAresta(g, cidade_a, cidade_b, 0, peso);
-	// 	printf("Deseja inserir mais? 1-sim/2-nao \n");
-	// 	scanf(" %d", &status);	
-	// };
+	while (status == 1){
+		printf("Digite as rodovias que ligam a cidade. \nEx.: 1 5 ligam as cidades 1 e 5 ida e volta\n");
+		scanf(" %d %d", &cidade_a, &cidade_b);
+		printf("Qual o valor do pedágio? ");
+		scanf(" %f", &peso);
+		insereAresta(g, cidade_a, cidade_b, 0, peso);
+		printf("Deseja inserir mais? 1-sim/2-nao \n");
+		scanf(" %d", &status);	
+	};
 
 	printf("grafo=====\n");
 
@@ -250,9 +252,6 @@ int main(){
 	p = iniciaPilha();
 	caminho = iniciaCaminho();
 	caminhoSuper = iniciaCaminho();
-
-	// p = inserirNaPilha(p,1);
-	// printf("Merda desgracada %d",buscarNaPilha(p,1));
 	
 	imprimirGrafo(g);
 	busca(g,p,1,1,caminho);
