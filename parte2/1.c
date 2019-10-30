@@ -154,54 +154,29 @@ void mostrarCaminho(Caminho *caminho){
 
 void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
 	p = inserirNaPilha(p, ini-1);
-	printf("foi adcionado a pilha %d \n", ini-1);
-	// printf("tenho grau %d\n", gr->grau_max);
-	// printf("tenho grau %d\n", gr->grau[0]);
-	// printf("ini %d\n", ini);
+	// printf("foi adcionado a pilha %d \n", ini-1);
 	for (int i = 0; i < gr->grau[ini-1]; i++){
-		// printf("aresta %d, i=%d\n",gr->aresta[1][0],i);
-		printf("bucado: %d; res: %d\n",gr->aresta[ini-1][i],buscarNaPilha(p, gr->aresta[ini-1][i]) );
+		// printf("bucado: %d; res: %d\n",gr->aresta[ini-1][i],buscarNaPilha(p, gr->aresta[ini-1][i]) );
 		if (!buscarNaPilha(p, gr->aresta[ini-1][i]) && (gr->valor_total >= caminho->peso + gr->pesos[ini - 1][i])){
 			caminho->cidades += 1;
 			caminho->destino = (int *) realloc(caminho->destino, caminho->cidades*sizeof(int));
 			caminho->destino[caminho->cidades-1] = gr->aresta[ini-1][i];
 			caminho->peso += gr->pesos[ini-1][i];
-			printf("----aqui %d , %d \n", caminho->cidades, caminhoSuper->cidades);
-			if (caminho->cidades > caminhoSuper->cidades || ( (caminho->cidades == caminhoSuper->cidades) && (caminhoSuper->peso > caminho->peso) )){
-				// if (caminho->cidades == caminhoSuper->cidades && caminhoSuper->peso > caminho->peso)
+			// printf("----aqui %d , %d \n", caminho->cidades, caminhoSuper->cidades);
+			if (caminho->cidades > caminhoSuper->cidades){
 				caminhoSuper->cidades = caminho->cidades;
 				caminhoSuper->peso =caminho->peso ;
 				caminhoSuper->destino = (int *)malloc(caminho->cidades * sizeof(int));
 				for( int i =0; i< caminhoSuper->cidades; i++){
 					caminhoSuper->destino[i] = caminho->destino[i];
-					printf("eita %d, peso %f\n", caminho->destino[i], caminhoSuper->peso);
+					// printf("eita %d, peso %f\n", caminho->destino[i], caminhoSuper->peso);
 				}
-				// printf("adc\n");
 			}
-			// printf("a %d\n",gr->aresta[ini - 1][i]);
-			// printf("eii,\n");
 			busca(gr, p, gr->aresta[ini-1][i]+1, ini, caminho);
 			caminho->cidades -= 1;
 			caminho->destino = (int *)realloc(caminho->destino, caminho->cidades * sizeof(int));
 			caminho->peso -= gr->pesos[ini-1][i];
 		}
-		
-		// printf("eii\n");
-		// printf("valor total %f\n", gr->valor_total);
-		// printf("valor soma %f\n", caminho->peso + gr->pesos[ant - 1][ini - 1]);
-		// if (!buscarNaPilha(p, gr->aresta[ini-1][i]) && (gr->valor_total >= caminho->peso + gr->pesos[ant-1][ini-1])){
-		// 	caminho->cidades += 1; 
-		// 	caminho->destino = (int*) realloc(caminho->destino, caminho->cidades*sizeof(int));
-		// 	caminho->destino[caminho->cidades] = ini;
-		// 	caminho->peso += gr->pesos[ant-1][ini-1];
-		// 	if( caminho->cidades > caminhoSuper->cidades )
-		// 		caminhoSuper = caminho;
-		// 	printf("eii-%d",caminhoSuper->cidades);
-		// 	busca(gr,p, gr->aresta[ini-1][i], ini, caminho);
-		// }
-		// caminho->cidades -= 1;
-		// free(&caminho->destino[caminho->cidades]);
-		// caminho->peso -= gr->pesos[ant - 1][ini - 1];
 	}
 	removerNaPilha(p);
 }
@@ -213,36 +188,38 @@ int main(){
 	int num_cidades;
 	float caixa;
 
-	printf("Digite a quantidade de cidades: ");
-	scanf(" %d", &num_cidades);
+	// printf("Digite a quantidade de cidades: ");
+	// scanf(" %d", &num_cidades);
 	
-	printf("Qual o valor máximo para gasto: ");
-	scanf(" %f", &caixa);
+	// printf("Qual o valor máximo para gasto: ");
+	// scanf(" %f", &caixa);
 
 	g = cria_grafo(num_cidades, num_cidades, 1, caixa);
-	g = cria_grafo(5, 5, 1, 15);
+	g = cria_grafo(8, 8, 1, 8);
 
 	printf("Suas cidades são numeradas entre 1 e %d\n", num_cidades);
 
 	int status = 1;
 	int cidade_a, cidade_b;
 	float peso;
-	// insereAresta(g, 1, 2, 0, 1);
-	// insereAresta(g, 2, 3, 0, 2);
-	// insereAresta(g, 2, 4, 0, 1);
+	insereAresta(g, 1, 2, 0, 1);
+	insereAresta(g, 2, 3, 0, 2);
+	insereAresta(g, 3, 6, 0, 1);
+	insereAresta(g, 6, 8, 0, 1);
+	insereAresta(g, 2, 4, 0, 1);
  
-	// insereAresta(g, 1, 5, 0, 1);
-	// insereAresta(g, 1, 2, 0, 1);
+	insereAresta(g, 4, 5, 0, 1);
+	insereAresta(g, 5, 7, 0, 4);
 
-	while (status == 1){
-		printf("Digite as rodovias que ligam a cidade. \nEx.: 1 5 ligam as cidades 1 e 5 ida e volta\n");
-		scanf(" %d %d", &cidade_a, &cidade_b);
-		printf("Qual o valor do pedágio? ");
-		scanf(" %f", &peso);
-		insereAresta(g, cidade_a, cidade_b, 0, peso);
-		printf("Deseja inserir mais? 1-sim/2-nao \n");
-		scanf(" %d", &status);	
-	};
+	// while (status == 1){
+	// 	printf("Digite as rodovias que ligam a cidade. \nEx.: 1 5 ligam as cidades 1 e 5 ida e volta\n");
+	// 	scanf(" %d %d", &cidade_a, &cidade_b);
+	// 	printf("Qual o valor do pedágio? ");
+	// 	scanf(" %f", &peso);
+	// 	insereAresta(g, cidade_a, cidade_b, 0, peso);
+	// 	printf("Deseja inserir mais? 1-sim/2-nao \n");
+	// 	scanf(" %d", &status);	
+	// };
 
 	printf("grafo=====\n");
 
