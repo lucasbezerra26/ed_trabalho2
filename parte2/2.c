@@ -2,13 +2,14 @@
 #include <stdlib.h>
 int t;
 
-struct Grafo{
+struct Grafo
+{
 	int eh_ponderado;
 	int nro_vertices;
 	int grau_max; //numero maximo de ligações
-	int** aresta; //as conexões 
-	float** pesos;
-	int* grau; //quantas aresta o vertice ja possue
+	int **aresta; //as conexões
+	float **pesos;
+	int *grau; //quantas aresta o vertice ja possue
 	float valor_total;
 };
 typedef struct Grafo grafo;
@@ -44,46 +45,86 @@ caminho *iniciaCaminho(){
 }
 
 
-grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_total){
-	grafo *gr = (grafo*) malloc(sizeof(grafo));
+grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_total)
+{
+	grafo *gr = (grafo *)malloc(sizeof(grafo));
 	int i;
 	gr->nro_vertices = nro_vertices;
 	gr->grau_max = grau_max;
 	gr->valor_total = valor_total;
-	gr->eh_ponderado = eh_ponderado;
-	gr->grau = (int*) calloc(nro_vertices,sizeof(int));
-	
-	gr->aresta = (int**) malloc(sizeof(int*));
-	for (int i = 0; i < nro_vertices; i++){
-		gr->aresta[i] = (int*) malloc(grau_max * sizeof(int));
-	}
-	if (gr->eh_ponderado){
-		gr->pesos = (float**) malloc(nro_vertices * sizeof(float*));
-		for (i = 0; i < nro_vertices; i++){
-			printf("peso\n");
-			gr->pesos[i] = (float*) malloc(grau_max  *sizeof(float));
+	gr->eh_ponderado = eh_ponderado;					 //só para garanatir que vai ser 0 ou 1
+	gr->grau = (int *)calloc(nro_vertices, sizeof(int)); //criando a lista
+	gr->aresta = (int **)malloc(sizeof(int *) * nro_vertices);
+	for (int i = 0; i < nro_vertices; i++)
+	{
+		gr->aresta[i] = (int *)malloc(grau_max * sizeof(int)); //colocando para apontar cada posição da lista para outra lista
+
+		if (gr->eh_ponderado)
+		{
+			gr->pesos = (float **)malloc(nro_vertices * sizeof(float *));
+			for (int j = 0; j < nro_vertices; j++)
+			{
+				printf("peso\n");
+				gr->pesos[j] = (float *)malloc(grau_max * sizeof(float)); //fazendo a mesma coisa com os pesos
+			}
 		}
 	}
-	return gr; 
+	return gr;
 }
 
-int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
+void libera_grafo(grafo *gr)
+{
+	if (gr != NULL)
+	{
+		for (int i = 0; i < gr->nro_vertices; i++)
+		{
+			free(gr->aresta[i]);
+		}
+		free(gr->aresta);
+		if (gr->eh_ponderado)
+		{
+			for (int i = 0; i < gr->nro_vertices; i++)
+			{
+				free(gr->pesos[i]);
+			}
+			free(gr->pesos);
+		}
+		free(gr->grau);
+		free(gr);
+	}
+}
+
+int insereAresta(grafo *gr, int orig, int dest, int eh_digrafo, float peso)
+{
 	//inicio (verificando se tudo existe)
 	if (gr == NULL)
 		return 0;
-	if(orig-1 < 0 || orig-1 >= gr->nro_vertices)
+	if (orig - 1 < 0 || orig - 1 >= gr->nro_vertices)
 		return 0;
-	if(dest-1 < 0 || dest-1 >= gr->nro_vertices)
+	if (dest - 1 < 0 || dest - 1 >= gr->nro_vertices)
 		return 0;
 	//fim;
-	gr->aresta[orig-1][gr->grau[orig-1]] = dest-1; //adicionando o destino a ultima posicao da lista
-	if(gr->eh_ponderado)
-		gr->pesos[orig-1][gr->grau[orig-1]] = peso; //se for ponderado faz a mesma coisa ao peso
-	gr->grau[orig-1]++; // e incrementa o numero de ligações para aquele vertice 	
+	gr->aresta[orig - 1][gr->grau[orig - 1]] = dest - 1; //adicionando o destino a ultima posicao da lista
+	if (gr->eh_ponderado)
+		gr->pesos[orig - 1][gr->grau[orig - 1]] = peso; //se for ponderado faz a mesma coisa ao peso
+	gr->grau[orig - 1]++;								// e incrementa o numero de ligações para aquele vertice
 
-	if(eh_digrafo == 0)
-		insereAresta(gr,dest,orig,1,peso); //se não for digrafo ele vai ligando o dest a orig, o 1 indicando que é digrafo é para ele repetir somente uma vez
+	printf("Entrando antes do print: %d\n", orig);
+	if (eh_digrafo == 0)
+	{
+		printf("Entrando: %d\n", orig);
+		insereAresta(gr, dest, orig, 1, peso); //se não for digrafo ele vai ligando o dest a orig, o 1 indicando que é digrafo é para ele repetir somente uma vez
+	}
 	return 1;
+}
+
+void imprimirGrafo(grafo *gr)
+{
+	for (int x = 0; x < gr->nro_vertices; x++)
+	{
+		for (int i = 0; i < gr->grau[x]; i++)
+			printf("%d tem ligacao com %d\n", x + 1, gr->aresta[x][i] + 1);
+	}
 }
 
 void enfileira(fila *f, int valor){
