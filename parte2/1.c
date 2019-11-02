@@ -44,12 +44,12 @@ grafo *cria_grafo(int nro_vertices, int grau_max, int eh_ponderado, float valor_
 		if (gr->eh_ponderado){
 			gr->pesos = (float**) malloc(nro_vertices * sizeof(float*));
 			for (int j = 0; j < nro_vertices; j++){
-				printf("peso\n");
+				// printf("peso\n");
 				gr->pesos[j] = (float*) malloc(grau_max  *sizeof(float)); //fazendo a mesma coisa com os pesos
 			}
 		}
 	}
-	printf("terminei\n");
+	// printf("terminei\n");
 	return gr; 
 }
 
@@ -85,9 +85,9 @@ int insereAresta(grafo* gr, int orig, int dest, int eh_digrafo, float peso){
 		gr->pesos[orig-1][gr->grau[orig-1]] = peso; //se for ponderado faz a mesma coisa ao peso
 	gr->grau[orig-1]++; // e incrementa o numero de ligações para aquele vertice 	
 
-	printf("Entrando antes do print: %d\n", orig);
+	// printf("Entrando antes do print: %d\n", orig);
 	if(eh_digrafo == 0){
-		printf("Entrando: %d\n", orig);
+		// printf("Entrando: %d\n", orig);
 		insereAresta(gr,dest,orig,1,peso); //se não for digrafo ele vai ligando o dest a orig, o 1 indicando que é digrafo é para ele repetir somente uma vez
 	}
 	return 1;
