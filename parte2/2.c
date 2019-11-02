@@ -166,18 +166,23 @@ void busca(grafo *g, fila *f, int ini, int final, caminho *c){
 	int *fila_vertice, final_fila = 0, inicio_fila = 0, cont = 1, vertice_atual;
 	fila_vertice = (int *) malloc(g->nro_vertices * sizeof(int));
 	final_fila++;
-	fila_vertice[final_fila] = ini-1;
+	fila_vertice[final_fila-1] = ini-1;
 	visitados[ini-1] = cont;
+
+	c->cidades += 1;
+	c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
+	c->destino[c->cidades-1] = ini-1;
+	c->peso += g->pesos[ini-1][0];
 	
 	while (inicio_fila != final_fila){
 		inicio_fila = (inicio_fila + 1) % g->nro_vertices;
-		vertice_atual = fila_vertice[inicio_fila];
+		vertice_atual = fila_vertice[inicio_fila-1];
 		cont++;
 		
 		for (int i = 0; i < g->grau[vertice_atual]; i++){
 			if(!visitados[g->aresta[vertice_atual][i]] && (g->valor_total >= c->peso + g->pesos[ini - 1][i])){
 				final_fila = (final_fila + 1) % g->nro_vertices;
-				fila_vertice[final_fila] = g->aresta[vertice_atual][i];
+				fila_vertice[final_fila-1] = g->aresta[vertice_atual][i];
 				visitados[g->aresta[vertice_atual][i]] = cont;
 				c->cidades += 1;
 				c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
@@ -192,9 +197,15 @@ void busca(grafo *g, fila *f, int ini, int final, caminho *c){
 void mostrarCaminho(caminho *c){
 	printf("Numero de cidades: %d\n", c->cidades);
 	printf("Dinheiro gasto: %f\n", c->peso);
-	printf("Cidades: 1");
-	for(int i = 0; i<c->cidades;i++)
-		printf(", %d ", c->destino[i]+1);
+	printf("Cidades: ");
+	for(int i = 0; i<c->cidades;i++){
+		if (i == c->cidades-1){			
+			printf("%d", c->destino[i]+1);
+		}else{
+			printf("%d , ", c->destino[i]+1);
+		}
+	}
+	printf("\n");
 }
 
 int main(){
@@ -241,7 +252,7 @@ int main(){
 	f = iniciaFila();
 	c = iniciaCaminho();
 	
-	busca(g,f,1,4,c);
+	busca(g,f,1,3,c);
 
 	mostrarCaminho(c);
 	return 0;
