@@ -146,9 +146,10 @@ Caminho *iniciaCaminho(){
 void mostrarCaminho(Caminho *caminho){
 	printf("Numero de cidades: %d\n", caminho->cidades);
 	printf("Dinheiro gasto: %f\n", caminho->peso);
-	printf("Cidades: 1");
-	for(int i = 0; i<caminho->cidades;i++)
+	printf("Cidades: %d",caminho->destino[0]+1);
+	for(int i = 1; i<caminho->cidades;i++)
 		printf(", %d ", caminho->destino[i]+1);
+	printf("\n");
 }
 
 
@@ -168,7 +169,7 @@ void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
 				caminhoSuper->peso =caminho->peso ;
 				caminhoSuper->destino = (int *)malloc(caminho->cidades * sizeof(int));
 				for( int i =0; i< caminhoSuper->cidades; i++){
-					caminhoSuper->destino[i] = caminho->destino[i];
+					caminhoSuper->destino[i+1] = caminho->destino[i];
 					// printf("eita %d, peso %f\n", caminho->destino[i], caminhoSuper->peso);
 				}
 			}
@@ -229,7 +230,7 @@ int main(){
 	p = iniciaPilha();
 	caminho = iniciaCaminho();
 	caminhoSuper = iniciaCaminho();
-	
+
 	imprimirGrafo(g);
 	busca(g,p,1,1,caminho);
 	mostrarCaminho(caminhoSuper);
