@@ -182,14 +182,17 @@ void busca(grafo *g, fila *f, int ini, int final, caminho *c, caminho *super){
 		c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
 		c->destino[c->cidades-1] = ini-1;
 	}
+
+	int x = 0;
 	
-	while (inicio_fila != final_fila){
+	vertice_atual = ini-1;
+	while (x != g->nro_vertices){
+		x++;
 		inicio_fila++;
 		vertice_atual = fila_vertice[inicio_fila];
-		cont++;
-
+		
 		for (int i = 0; i < g->grau[vertice_atual]; i++){
-			if(!esta_no_caminho(c, g->aresta[vertice_atual][i]) && (g->valor_total >= c->peso + g->pesos[ini - 1][i])){
+			if(!esta_no_caminho(c, g->aresta[vertice_atual][i]) && (g->valor_total >= c->peso + g->pesos[vertice_atual][i])){
 				c->cidades += 1;
 				c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
 				c->destino[c->cidades-1] = g->aresta[vertice_atual][i];
@@ -197,7 +200,6 @@ void busca(grafo *g, fila *f, int ini, int final, caminho *c, caminho *super){
 
 				final_fila++;
 				fila_vertice[final_fila] = g->aresta[vertice_atual][i];
-				visitados[g->aresta[vertice_atual][i]] = cont;
 
 			}
 		}
