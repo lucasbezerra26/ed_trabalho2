@@ -18,8 +18,8 @@ struct Caminho{
 	int cidades;
 	float peso;
 };
-typedef struct Caminho Caminho;
-Caminho *caminhoSuper;
+typedef struct Caminho caminho;
+caminho *caminhoSuper;
 
 struct Pilha{
 	int valor;
@@ -134,16 +134,16 @@ int topoDaPilha(pilha *listaPilha){
 	return listaPilha->valor;
 }
 
-Caminho *iniciaCaminho(){
-	Caminho *aux;
-	aux = (Caminho *) malloc(sizeof(Caminho));
+caminho *iniciaCaminho(){
+	caminho *aux;
+	aux = (caminho *) malloc(sizeof(caminho));
 	aux->destino = (int *) malloc(sizeof(int));
 	aux->cidades = 0;
 	aux->peso = (float) 0.0;
 	return aux;
 }
 
-void mostrarCaminho(Caminho *caminho){
+void mostrarCaminho(caminho *caminho){
 	printf("Numero de cidades: %d\n", caminho->cidades);
 	printf("Dinheiro gasto: %f\n", caminho->peso);
 	printf("Cidades: %d",caminho->destino[0]+1);
@@ -153,7 +153,7 @@ void mostrarCaminho(Caminho *caminho){
 }
 
 
-void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
+void buscando(grafo *gr,pilha *p, int ini, int ant, caminho *caminho){
 	p = inserirNaPilha(p, ini-1);
 	// printf("foi adcionado a pilha %d \n", ini-1);
 	for (int i = 0; i < gr->grau[ini-1]; i++){
@@ -167,13 +167,13 @@ void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
 			if (caminho->cidades > caminhoSuper->cidades){
 				caminhoSuper->cidades = caminho->cidades;
 				caminhoSuper->peso =caminho->peso ;
-				caminhoSuper->destino = (int *)malloc(caminho->cidades * sizeof(int));
-				for( int i =0; i< caminhoSuper->cidades; i++){
-					caminhoSuper->destino[i+1] = caminho->destino[i];
+                caminhoSuper->destino = (int *)malloc(caminho->cidades * sizeof(int));
+                for( int i =0; i< caminhoSuper->cidades; i++){
+					caminhoSuper->destino[i] = caminho->destino[i];
 					// printf("eita %d, peso %f\n", caminho->destino[i], caminhoSuper->peso);
 				}
 			}
-			busca(gr, p, gr->aresta[ini-1][i]+1, ini, caminho);
+			buscando(gr, p, gr->aresta[ini-1][i]+1, ini, caminho);
 			caminho->cidades -= 1;
 			caminho->destino = (int *)realloc(caminho->destino, caminho->cidades * sizeof(int));
 			caminho->peso -= gr->pesos[ini-1][i];
@@ -182,6 +182,11 @@ void busca(grafo *gr,pilha *p, int ini, int ant, Caminho *caminho){
 	removerNaPilha(p);
 }
 
+void buscaProfundidade(grafo *gr,pilha *p, int ini, int ant, caminho *caminho){
+    caminhoSuper->cidades = 1;
+    caminho->cidades = 1;
+    buscando(gr,p,ini,ant,caminho);
+}
 int main(){
 	// main
 
@@ -222,17 +227,17 @@ int main(){
 	// 	scanf(" %d", &status);	
 	// };
 
-	printf("grafo=====\n");
+	// printf("grafo=====\n");
 
 	pilha *p = NULL;
-	Caminho *caminho = NULL;
+	caminho *caminho = NULL;
 
 	p = iniciaPilha();
 	caminho = iniciaCaminho();
 	caminhoSuper = iniciaCaminho();
 
-	imprimirGrafo(g);
-	busca(g,p,1,1,caminho);
+	// imprimirGrafo(g);
+	buscaProfundidade(g,p,1,1,caminho);
 	mostrarCaminho(caminhoSuper);
 	printf("\n");
 	return 0;
