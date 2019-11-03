@@ -156,7 +156,15 @@ int marcado(caminho *c, int valor){
 	return 0;
 }
 
-void busca(grafo *g, fila *f, int ini, int final, caminho *c){
+int esta_no_caminho(caminho *c, int valor){
+	for (int i = 0; i < c->cidades; i++){
+		if(c->destino[i] == valor)
+			return 1;
+	}
+	return 0;
+}
+
+void busca(grafo *g, fila *f, int ini, int final, caminho *c, caminho *super){
 	int visitados[g->nro_vertices];
 			
 	for(int i = 0; i < g->nro_vertices; i++){
@@ -166,30 +174,43 @@ void busca(grafo *g, fila *f, int ini, int final, caminho *c){
 	int *fila_vertice, final_fila = 0, inicio_fila = 0, cont = 1, vertice_atual;
 	fila_vertice = (int *) malloc(g->nro_vertices * sizeof(int));
 	final_fila++;
-	fila_vertice[final_fila-1] = ini-1;
-	visitados[ini-1] = cont;
+	fila_vertice[final_fila] = ini-1;
+	visitados[ini-1] = cont;	
 
-	c->cidades += 1;
-	c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
-	c->destino[c->cidades-1] = ini-1;
-	c->peso += g->pesos[ini-1][0];
+	if(g->valor_total >= c->peso + g->pesos[ini - 1][0]){
+		c->cidades += 1;
+		c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
+		c->destino[c->cidades-1] = ini-1;
+	}
 	
 	while (inicio_fila != final_fila){
-		inicio_fila = (inicio_fila + 1) % g->nro_vertices;
-		vertice_atual = fila_vertice[inicio_fila-1];
+		inicio_fila++;
+		vertice_atual = fila_vertice[inicio_fila];
 		cont++;
-		
+
 		for (int i = 0; i < g->grau[vertice_atual]; i++){
-			if(!visitados[g->aresta[vertice_atual][i]] && (g->valor_total >= c->peso + g->pesos[ini - 1][i])){
-				final_fila = (final_fila + 1) % g->nro_vertices;
-				fila_vertice[final_fila-1] = g->aresta[vertice_atual][i];
-				visitados[g->aresta[vertice_atual][i]] = cont;
+			if(!esta_no_caminho(c, g->aresta[vertice_atual][i]) && (g->valor_total >= c->peso + g->pesos[ini - 1][i])){
 				c->cidades += 1;
 				c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
-				c->destino[c->cidades-1] = g->aresta[ini-1][i];
-				c->peso += g->pesos[ini-1][i];
+				c->destino[c->cidades-1] = g->aresta[vertice_atual][i];
+				c->peso += g->pesos[vertice_atual][i];
+
+				final_fila++;
+				fila_vertice[final_fila] = g->aresta[vertice_atual][i];
+				visitados[g->aresta[vertice_atual][i]] = cont;
+
 			}
 		}
+
+		if(super->cidades < c->cidades){
+			super->cidades = c->cidades;
+			super->peso =c->peso ;
+			super->destino = (int *)malloc(c->cidades * sizeof(int));
+			for( int i =0; i< super->cidades; i++){
+				super->destino[i] = c->destino[i];
+			}
+		}
+
 	}
 	free(fila_vertice);
 }
@@ -249,11 +270,13 @@ int main(){
 	
 	fila *f = NULL;
 	caminho *c = NULL;
+	caminho *super = NULL;
 	f = iniciaFila();
 	c = iniciaCaminho();
+	super = iniciaCaminho();
 	
-	busca(g,f,1,3,c);
+	busca(g,f,1,1,c, super);
 
-	mostrarCaminho(c);
+	mostrarCaminho(super);
 	return 0;
 }
