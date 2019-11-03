@@ -164,6 +164,24 @@ int esta_no_caminho(caminho *c, int valor){
 	return 0;
 }
 
+int caminho_valido(grafo *g, caminho *c){
+	int resultado = 1;
+	for(int i= 0; i< c->cidades-1; i++){
+		int x = 0;
+		for(int j = 0; j < g->grau[c->destino[i]]; j++){
+			if(g->aresta[c->destino[i]][j] == c->destino[i+1]){
+				x = 1;
+				break;
+			}
+		}
+		if(x == 0){
+			resultado = 0;
+			break;
+		}		
+	}
+	return resultado;
+}
+
 void busca(grafo *g, fila *f, int ini, int final, caminho *c, caminho *super){
 	int visitados[g->nro_vertices];
 			
@@ -183,13 +201,12 @@ void busca(grafo *g, fila *f, int ini, int final, caminho *c, caminho *super){
 		c->destino[c->cidades-1] = ini-1;
 	}
 
-	int x = 0;
+	float ultimo_peso = 0;
 	
-	vertice_atual = ini-1;
-	while (x != g->nro_vertices){
-		x++;
+	while (inicio_fila != final_fila){
 		inicio_fila++;
 		vertice_atual = fila_vertice[inicio_fila];
+		cont++;
 		
 		for (int i = 0; i < g->grau[vertice_atual]; i++){
 			if(!esta_no_caminho(c, g->aresta[vertice_atual][i]) && (g->valor_total >= c->peso + g->pesos[vertice_atual][i])){
@@ -197,21 +214,30 @@ void busca(grafo *g, fila *f, int ini, int final, caminho *c, caminho *super){
 				c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
 				c->destino[c->cidades-1] = g->aresta[vertice_atual][i];
 				c->peso += g->pesos[vertice_atual][i];
+				ultimo_peso = g->pesos[vertice_atual][i];
+				
 
 				final_fila++;
 				fila_vertice[final_fila] = g->aresta[vertice_atual][i];
+				visitados[g->aresta[vertice_atual][i]] = cont;
 
 			}
 		}
 
-		if(super->cidades < c->cidades){
-			super->cidades = c->cidades;
-			super->peso =c->peso ;
-			super->destino = (int *)malloc(c->cidades * sizeof(int));
-			for( int i =0; i< super->cidades; i++){
-				super->destino[i] = c->destino[i];
+		if(caminho_valido(g, c)){
+			if(super->cidades < c->cidades){
+				super->cidades = c->cidades;
+				super->peso =c->peso ;
+				super->destino = (int *)malloc(c->cidades * sizeof(int));
+				for( int i =0; i< super->cidades; i++){
+					super->destino[i] = c->destino[i];
+				}
 			}
+		}else{
+			c->cidades -= 1;
+			c->peso -= ultimo_peso;
 		}
+
 
 	}
 	free(fila_vertice);
