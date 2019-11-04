@@ -509,6 +509,13 @@ int main(){
         mostrarCaminho(caminhoSuper);
 
         printf("\n");
+        free(caminho);
+        free(p);
+        free(f);
     }
+    for(int i=0; i<10;i++)
+        libera_grafo(casosGrafos[i]);
+    free(casosGrafos);
+    free(caminhoSuper);
     return 0;
 }
