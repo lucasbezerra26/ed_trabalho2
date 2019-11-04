@@ -139,7 +139,7 @@ int topoDaPilha(pilha *listaPilha){
 caminho *iniciaCaminho(){
 	caminho *aux;
 	aux = (caminho *) malloc(sizeof(caminho));
-	aux->destino = (int *) malloc(sizeof(int));
+	aux->destino = (int *) calloc(sizeof(int),1);
 	aux->cidades = 0;
 	aux->peso = (float) 0.0;
 	return aux;
@@ -515,7 +515,7 @@ int main(){
     }
     for(int i=0; i<10;i++)
         libera_grafo(casosGrafos[i]);
-    free(casosGrafos);
+    free(	casosGrafos);
     free(caminhoSuper);
     return 0;
 }
