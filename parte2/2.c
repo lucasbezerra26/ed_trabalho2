@@ -287,14 +287,6 @@ int main(){
 		printf("Deseja inserir mais? 1-sim/2-nao \n");
 		scanf(" %d", &status);	
 	};
-
-	// for (int i = 0; i < g->nro_vertices; i++){
-	// 	printf("cidade %d ", i+1);
-	// 	for (int j = 0; j < g->grau[i]; j++){
-	// 		printf("ligacao %d ", g->aresta[i][j] + 1);
-	// 	}
-	// 	printf("\n");
-	// }
 	
 	fila *f = NULL;
 	caminho *c = NULL;
@@ -306,5 +298,9 @@ int main(){
 	busca(g,f,1,1,c, super);
 
 	mostrarCaminho(super);
+	libera_grafo(g);
+	free(f);
+	free(c);
+	free(super);
 	return 0;
 }

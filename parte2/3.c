@@ -193,41 +193,174 @@ void buscaProfundidade(grafo *gr,pilha *p, int ini, int ant, caminho *caminho){
 //fim do que se refere a busca em profundidade
 
 //inicio busca em largura
+struct Fila{
+	int valor;
+	struct Fila *prox;
+};
+typedef struct Fila fila;
+
+fila *iniciaFila(){
+	fila *f;
+	f = (fila *) malloc(sizeof(fila));
+	f->valor = -1;
+	f->prox = NULL;
+	return f;
+}
+
+void enfileira(fila *f, int valor){
+	fila *aux;
+	aux = f;
+	while(aux->valor != -1)
+		aux = aux->prox;
+
+	aux->valor = valor;
+	aux->prox = (fila *) malloc(sizeof(fila));
+	aux->prox->valor = -1;
+	aux->prox->prox = NULL;
+}
+void desinfileira(fila *f){
+	fila *aux;
+	aux = f;
+	f = f->prox;
+	free(aux);
+}
+
+int inicio_fila(fila *f){
+	return f->valor;
+}
+
+int marcado(caminho *c, int valor){
+	for (int i = 0; i < c->cidades; i++){
+		if (c->destino[i] == valor){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int esta_no_caminho(caminho *c, int valor){
+	for (int i = 0; i < c->cidades; i++){
+		if(c->destino[i] == valor)
+			return 1;
+	}
+	return 0;
+}
+
+int caminho_valido(grafo *g, caminho *c){
+	int resultado = 1;
+	for(int i= 0; i< c->cidades-1; i++){
+		int x = 0;
+		for(int j = 0; j < g->grau[c->destino[i]]; j++){
+			if(g->aresta[c->destino[i]][j] == c->destino[i+1]){
+				x = 1;
+				break;
+			}
+		}
+		if(x == 0){
+			resultado = 0;
+			break;
+		}		
+	}
+	return resultado;
+}
+
+void buscaLargura(grafo *g, fila *f, int ini, int final, caminho *c, caminho *super){
+	int visitados[g->nro_vertices];
+			
+	for(int i = 0; i < g->nro_vertices; i++){
+		visitados[i] = 0;
+	}
+	
+	int *fila_vertice, final_fila = 0, inicio_fila = 0, cont = 1, vertice_atual;
+	fila_vertice = (int *) malloc(g->nro_vertices * sizeof(int));
+	final_fila++;
+	fila_vertice[final_fila] = ini-1;
+	visitados[ini-1] = cont;	
+
+	if(g->valor_total >= c->peso + g->pesos[ini - 1][0]){
+		c->cidades += 1;
+		c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
+		c->destino[c->cidades-1] = ini-1;
+	}
+
+	float ultimo_peso = 0;
+	
+	while (inicio_fila != final_fila){
+		inicio_fila++;
+		vertice_atual = fila_vertice[inicio_fila];
+		cont++;
+		
+		for (int i = 0; i < g->grau[vertice_atual]; i++){
+			if(!esta_no_caminho(c, g->aresta[vertice_atual][i]) && (g->valor_total >= c->peso + g->pesos[vertice_atual][i])){
+				c->cidades += 1;
+				c->destino = (int *) realloc(c->destino, c->cidades*sizeof(int));
+				c->destino[c->cidades-1] = g->aresta[vertice_atual][i];
+				c->peso += g->pesos[vertice_atual][i];
+				ultimo_peso = g->pesos[vertice_atual][i];
+				
+
+				final_fila++;
+				fila_vertice[final_fila] = g->aresta[vertice_atual][i];
+				visitados[g->aresta[vertice_atual][i]] = cont;
+
+			}
+		}
+
+		if(caminho_valido(g, c)){
+			if(super->cidades < c->cidades){
+				super->cidades = c->cidades;
+				super->peso =c->peso ;
+				super->destino = (int *)malloc(c->cidades * sizeof(int));
+				for( int i =0; i< super->cidades; i++){
+					super->destino[i] = c->destino[i];
+				}
+			}
+		}else{
+			c->cidades -= 1;
+			c->peso -= ultimo_peso;
+		}
+
+
+	}
+	free(fila_vertice);
+}
+
+
+//fim do que se refere a busca em largura
 
 grafo **geraCasos(){
     grafo **casosGrafos = (grafo**) malloc(sizeof(grafo*)*10);
-    casosGrafos[0] = cria_grafo(10, 10, 1, 12);
+    casosGrafos[0] = cria_grafo(8, 8, 1, 10);
     casosGrafos[1] = cria_grafo(9, 9, 1, 15);
     casosGrafos[2] = cria_grafo(10, 10, 1, 10);
     casosGrafos[3] = cria_grafo(11, 11, 1, 12);
     casosGrafos[4] = cria_grafo(12, 12, 1, 8);
     casosGrafos[5] = cria_grafo(8, 8, 1, 5);
-    casosGrafos[6] = cria_grafo(10, 10, 1, 8);
+    casosGrafos[6] = cria_grafo(10, 10, 1, 18);
     casosGrafos[7] = cria_grafo(12, 12, 1, 8);
     casosGrafos[8] = cria_grafo(12, 12, 1, 18);
     casosGrafos[9] = cria_grafo(11, 11, 1, 18);
 
-    //inicio: ligacoes do casosGrafos[0]    
+    //inicio: ligacoes do casosGrafos[0]
     insereAresta(casosGrafos[0], 1, 2, 0, 1);
     insereAresta(casosGrafos[0], 2, 3, 0, 2);
-    insereAresta(casosGrafos[0], 3, 6, 0, 1);
-    insereAresta(casosGrafos[0], 6, 8, 0, 10);
-    insereAresta(casosGrafos[0], 8, 10, 0, 2);
-    insereAresta(casosGrafos[0], 10, 9, 0, 1);
-    insereAresta(casosGrafos[0], 2, 4, 0, 1);
-    insereAresta(casosGrafos[0], 4, 5, 0, 1);
-    insereAresta(casosGrafos[0], 5, 7, 0, 3);
+    insereAresta(casosGrafos[0], 3, 5, 0, 1);
+    insereAresta(casosGrafos[0], 5, 6, 0, 5);
+    insereAresta(casosGrafos[0], 6, 7, 0, 2);
+    insereAresta(casosGrafos[0], 3, 8, 0, 1);
+    // insereAresta(casosGrafos[0], 8, 9, 0, 1);
+    insereAresta(casosGrafos[0], 1, 4, 0, 1);
     //fim
 
-    //inicio: ligacoes do casosGrafos[1]    
+    //inicio: ligacoes do casosGrafos[1]
     insereAresta(casosGrafos[1], 1, 2, 0, 1);
     insereAresta(casosGrafos[1], 2, 3, 0, 2);
-    insereAresta(casosGrafos[1], 3, 6, 0, 1);
-    insereAresta(casosGrafos[1], 6, 8, 0, 1);
-    insereAresta(casosGrafos[1], 2, 4, 0, 1);
-    insereAresta(casosGrafos[1], 4, 5, 0, 1);
-    insereAresta(casosGrafos[1], 5, 7, 0, 3);
+    insereAresta(casosGrafos[1], 3, 5, 0, 1);
+    insereAresta(casosGrafos[1], 5, 6, 0, 5);
+    insereAresta(casosGrafos[1], 6, 7, 0, 2);
+    insereAresta(casosGrafos[1], 3, 8, 0, 1);
     insereAresta(casosGrafos[1], 7, 9, 0, 1);
+    insereAresta(casosGrafos[1], 6, 4, 0, 1);
     //fim
     
     //inicio: ligacoes do casosGrafos[2]    
@@ -237,9 +370,9 @@ grafo **geraCasos(){
     insereAresta(casosGrafos[2], 6, 8, 0, 1);
     insereAresta(casosGrafos[2], 8, 9, 0, 1);
     insereAresta(casosGrafos[2], 2, 4, 0, 1);
-    insereAresta(casosGrafos[2], 4, 5, 0, 1);
-    insereAresta(casosGrafos[2], 5, 7, 0, 1);
-    insereAresta(casosGrafos[2], 7, 10, 0, 1);
+    insereAresta(casosGrafos[2], 3, 5, 0, 1);
+    insereAresta(casosGrafos[2], 8, 7, 0, 1);
+    insereAresta(casosGrafos[2], 8, 10, 0, 1);
     //fim
 
     //inicio: ligacoes do casosGrafos[3]    
@@ -250,9 +383,9 @@ grafo **geraCasos(){
     insereAresta(casosGrafos[3], 6, 11, 0, 1);
     insereAresta(casosGrafos[3], 8, 9, 0, 1);
     insereAresta(casosGrafos[3], 2, 4, 0, 1);
-    insereAresta(casosGrafos[3], 4, 5, 0, 1);
-    insereAresta(casosGrafos[3], 5, 7, 0, 4);
-    insereAresta(casosGrafos[3], 4, 10, 0, 1);
+    insereAresta(casosGrafos[3], 8, 5, 0, 1);
+    insereAresta(casosGrafos[3], 9, 7, 0, 4);
+    insereAresta(casosGrafos[3], 3, 10, 0, 1);
     //fim
 
     //inicio: ligacoes do casosGrafos[4]    
@@ -263,9 +396,9 @@ grafo **geraCasos(){
     insereAresta(casosGrafos[4], 8, 9, 0, 1);
     insereAresta(casosGrafos[4], 6, 12, 0, 2);
     insereAresta(casosGrafos[4], 2, 4, 0, 1);
-    insereAresta(casosGrafos[4], 4, 5, 0, 1);
-    insereAresta(casosGrafos[4], 5, 7, 0, 2);
-    insereAresta(casosGrafos[4], 5, 10, 0, 1);
+    insereAresta(casosGrafos[4], 6, 5, 0, 1);
+    insereAresta(casosGrafos[4], 8, 7, 0, 2);
+    insereAresta(casosGrafos[4], 9, 10, 0, 1);
     insereAresta(casosGrafos[4], 10, 11, 0, 1);
     //fim
 
@@ -275,33 +408,33 @@ grafo **geraCasos(){
     insereAresta(casosGrafos[5], 3, 6, 0, 1);
     insereAresta(casosGrafos[5], 6, 8, 0, 3);
     insereAresta(casosGrafos[5], 2, 4, 0, 1);
-    insereAresta(casosGrafos[5], 4, 5, 0, 1);
-    insereAresta(casosGrafos[5], 5, 7, 0, 1);
+    insereAresta(casosGrafos[5], 3, 5, 0, 1);
+    insereAresta(casosGrafos[5], 6, 7, 0, 1);
     //fim
 
     //inicio: ligacoes do casosGrafos[6]
     insereAresta(casosGrafos[6], 1, 2, 0, 1);
     insereAresta(casosGrafos[6], 2, 3, 0, 1);
     insereAresta(casosGrafos[6], 3, 6, 0, 2);
-    insereAresta(casosGrafos[6], 6, 8, 0, 2);
+    insereAresta(casosGrafos[6], 6, 8, 0, 7);
     insereAresta(casosGrafos[6], 2, 4, 0, 1);
-    insereAresta(casosGrafos[6], 4, 5, 0, 3);
-    insereAresta(casosGrafos[6], 5, 7, 0, 1);
-    insereAresta(casosGrafos[6], 7, 10, 0, 1);
+    insereAresta(casosGrafos[6], 1, 5, 0, 3);
+    insereAresta(casosGrafos[6], 6, 7, 0, 6);
+    insereAresta(casosGrafos[6], 8, 10, 0, 1);
     //fim
 
     //inicio: ligacoes do casosGrafos[7]
     insereAresta(casosGrafos[7], 1, 2, 0, 1);
     insereAresta(casosGrafos[7], 2, 3, 0, 1);
-    insereAresta(casosGrafos[7], 3, 6, 0, 1);
+    insereAresta(casosGrafos[7], 3, 6, 0, 3);
     insereAresta(casosGrafos[7], 6, 8, 0, 1);
     insereAresta(casosGrafos[7], 8, 9, 0, 2);
     insereAresta(casosGrafos[7], 6, 12, 0, 1);
     insereAresta(casosGrafos[7], 2, 4, 0, 1);
-    insereAresta(casosGrafos[7], 4, 5, 0, 1);
-    insereAresta(casosGrafos[7], 5, 7, 0, 1);
-    insereAresta(casosGrafos[7], 5, 10, 0, 1);
-    insereAresta(casosGrafos[7], 10, 11, 0, 2);
+    insereAresta(casosGrafos[7], 3, 5, 0, 2);
+    insereAresta(casosGrafos[7], 6, 7, 0, 1);
+    insereAresta(casosGrafos[7], 8, 10, 0, 1);
+    insereAresta(casosGrafos[7], 9, 11, 0, 2);
     //fim
 
     //inicio: ligacoes do casosGrafos[8]
@@ -310,25 +443,25 @@ grafo **geraCasos(){
     insereAresta(casosGrafos[8], 3, 6, 0, 1);
     insereAresta(casosGrafos[8], 6, 8, 0, 10);
     insereAresta(casosGrafos[8], 2, 4, 0, 4);
-    insereAresta(casosGrafos[8], 4, 5, 0, 1);
-    insereAresta(casosGrafos[8], 5, 7, 0, 10);
+    insereAresta(casosGrafos[8], 3, 5, 0, 1);
+    insereAresta(casosGrafos[8], 6, 7, 0, 10);
     insereAresta(casosGrafos[8], 8, 9, 0, 5);
-    insereAresta(casosGrafos[8], 7, 10, 0, 1);
+    insereAresta(casosGrafos[8], 9, 10, 0, 1);
     insereAresta(casosGrafos[8], 10, 11, 0, 2);
     //fim
 
     //inicio: ligacoes do casosGrafos[9]
     insereAresta(casosGrafos[9], 1, 2, 0, 1);
+    // insereAresta(casosGrafos[9], 1, 10, 0, 3);
     insereAresta(casosGrafos[9], 2, 3, 0, 3);
-    insereAresta(casosGrafos[9], 3, 6, 0, 1);
-    insereAresta(casosGrafos[9], 6, 8, 0, 10);
-    insereAresta(casosGrafos[9], 6, 11, 0, 5);
-    insereAresta(casosGrafos[9], 8, 9, 0, 5);
-    insereAresta(casosGrafos[9], 2, 4, 0, 4);
-    insereAresta(casosGrafos[9], 4, 10, 0, 1);
-    insereAresta(casosGrafos[9], 4, 5, 0, 1);
-    insereAresta(casosGrafos[9], 5, 7, 0, 9);
-    insereAresta(casosGrafos[9], 7, 10, 0, 3);
+    insereAresta(casosGrafos[9], 3, 4, 0, 4);
+    insereAresta(casosGrafos[9], 2, 5, 0, 1);
+    insereAresta(casosGrafos[9], 4, 6, 0, 1);
+    insereAresta(casosGrafos[9], 6, 7, 0, 10);
+    insereAresta(casosGrafos[9], 4, 8, 0, 5);
+    insereAresta(casosGrafos[9], 7, 9, 0, 5);
+    insereAresta(casosGrafos[9], 9, 10, 0, 1);
+    insereAresta(casosGrafos[9], 10, 11, 0, 9);
     //fim
 
     return casosGrafos;
@@ -350,20 +483,39 @@ int main(){
 
 
     for(int i=0; i<10;i++){
-        printf("%dº-------------------\n", i);
         pilha *p = NULL;
         caminho *caminho = NULL;
+        fila *f = NULL;
         p = iniciaPilha();
         caminho = iniciaCaminho();
         caminhoSuper = iniciaCaminho();
+        f = iniciaFila();
 
+        printf("%dº-------Profundidade------------\n", i);
         ini = getMicrotime();
         buscaProfundidade(casosGrafos[i], p, 1, 1, caminho);
         fim = getMicrotime();
         printf("Tempo: %d\n",fim-ini);
-
         mostrarCaminho(caminhoSuper);
+
+        caminho = iniciaCaminho();
+        caminhoSuper = iniciaCaminho();
+
+        printf("%dº-------Largura------------\n", i);
+        ini = getMicrotime();
+        buscaLargura(casosGrafos[i], f, 1, 1, caminho, caminhoSuper);
+        fim = getMicrotime();
+        printf("Tempo: %d\n",fim-ini);
+        mostrarCaminho(caminhoSuper);
+
         printf("\n");
+        free(caminho);
+        free(p);
+        free(f);
     }
+    for(int i=0; i<10;i++)
+        libera_grafo(casosGrafos[i]);
+    free(casosGrafos);
+    free(caminhoSuper);
     return 0;
 }

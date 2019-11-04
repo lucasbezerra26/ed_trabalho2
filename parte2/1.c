@@ -194,40 +194,30 @@ int main(){
 	int num_cidades;
 	float caixa;
 
-	// printf("Digite a quantidade de cidades: ");
-	// scanf(" %d", &num_cidades);
+	printf("Digite a quantidade de cidades: ");
+	scanf(" %d", &num_cidades);
 	
-	// printf("Qual o valor máximo para gasto: ");
-	// scanf(" %f", &caixa);
+	printf("Qual o valor máximo para gasto: ");
+	scanf(" %f", &caixa);
 
 	g = cria_grafo(num_cidades, num_cidades, 1, caixa);
-	g = cria_grafo(8, 8, 1, 8);
 
 	printf("Suas cidades são numeradas entre 1 e %d\n", num_cidades);
 
 	int status = 1;
 	int cidade_a, cidade_b;
 	float peso;
-	insereAresta(g, 1, 2, 0, 1);
-	insereAresta(g, 2, 3, 0, 2);
-	insereAresta(g, 3, 6, 0, 1);
-	insereAresta(g, 6, 8, 0, 1);
-	insereAresta(g, 2, 4, 0, 1);
- 
-	insereAresta(g, 4, 5, 0, 1);
-	insereAresta(g, 5, 7, 0, 4);
 
-	// while (status == 1){
-	// 	printf("Digite as rodovias que ligam a cidade. \nEx.: 1 5 ligam as cidades 1 e 5 ida e volta\n");
-	// 	scanf(" %d %d", &cidade_a, &cidade_b);
-	// 	printf("Qual o valor do pedágio? ");
-	// 	scanf(" %f", &peso);
-	// 	insereAresta(g, cidade_a, cidade_b, 0, peso);
-	// 	printf("Deseja inserir mais? 1-sim/2-nao \n");
-	// 	scanf(" %d", &status);	
-	// };
+	while (status == 1){
+		printf("Digite as rodovias que ligam a cidade. \nEx.: 1 5 ligam as cidades 1 e 5 ida e volta\n");
+		scanf(" %d %d", &cidade_a, &cidade_b);
+		printf("Qual o valor do pedágio? ");
+		scanf(" %f", &peso);
+		insereAresta(g, cidade_a, cidade_b, 0, peso);
+		printf("Deseja inserir mais? 1-sim/2-nao \n");
+		scanf(" %d", &status);	
+	};
 
-	// printf("grafo=====\n");
 
 	pilha *p = NULL;
 	caminho *caminho = NULL;
@@ -239,6 +229,9 @@ int main(){
 	// imprimirGrafo(g);
 	buscaProfundidade(g,p,1,1,caminho);
 	mostrarCaminho(caminhoSuper);
-	printf("\n");
+	libera_grafo(g);
+	free(p);
+	free(caminho);
+	free(caminhoSuper);
 	return 0;
 }

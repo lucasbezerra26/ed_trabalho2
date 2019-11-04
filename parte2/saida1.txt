@@ -1,0 +1,50 @@
+0º-------Profundidade------------
+Tempo: 16
+0º-------Largura------------
+Tempo: 9
+
+1º-------Profundidade------------
+Tempo: 7
+1º-------Largura------------
+Tempo: 7
+
+2º-------Profundidade------------
+Tempo: 6
+2º-------Largura------------
+Tempo: 7
+
+3º-------Profundidade------------
+Tempo: 6
+3º-------Largura------------
+Tempo: 9
+
+4º-------Profundidade------------
+Tempo: 13
+4º-------Largura------------
+Tempo: 11
+
+5º-------Profundidade------------
+Tempo: 3
+5º-------Largura------------
+Tempo: 4
+
+6º-------Profundidade------------
+Tempo: 5
+6º-------Largura------------
+Tempo: 6
+
+7º-------Profundidade------------
+Tempo: 5
+7º-------Largura------------
+Tempo: 7
+
+8º-------Profundidade------------
+Tempo: 4
+8º-------Largura------------
+Tempo: 4
+
+9º-------Profundidade------------
+Tempo: 3
+9º-------Largura------------
+Tempo: 4
+
